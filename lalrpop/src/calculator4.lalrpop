@@ -1,0 +1,23 @@
+use std::str::FromStr;
+use ast::{Expr, Opcode};
+
+grammar;
+
+pub Expr: Box<Expr> = {
+	Expr ExprOp Factor => Box::new(Expr::Op(<>)), 
+	Factor,
+};
+
+ExprOp: Opcode = {
+			"+" => Opcode::Add,
+			"-" => Opcode::Sub,
+};
+
+
+Factor: Box<Expr> = {
+	Factor FactorOp Term => Box::new(Expr::Op(<>)),
+	Term,
+	};
+
+FactorX
+

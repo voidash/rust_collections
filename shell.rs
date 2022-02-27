@@ -7,6 +7,8 @@ use std::{io::{stdin, stdout, Write}, process::{Command, Stdio}, env};
 use std::path::Path;
 
 fn main() {
+    let redirection_operators = ["<", "<<", ">", ">>"];
+
     loop {
         print!("{} >", env::current_dir().unwrap().display());
         stdout().flush().unwrap();
@@ -20,7 +22,15 @@ fn main() {
 
 
     while let Some(command) = commands.next() {
-        println!("{}", command);
+        // check if command contains redirection operators or not 
+        let mut redirection = false;
+        for &operator in redirection_operators.iter() {
+            command.contains(operator)
+        }
+
+
+        
+
         let mut parts = command.trim().split_whitespace();
         let command = parts.next().unwrap();
         let args = parts;
@@ -49,6 +59,7 @@ fn main() {
             };
 
             let output = Command::new(command).args(args).stdin(stdin).stdout(stdout).spawn();
+
             match output {
                 Ok(output) => {
                     previous_command = Some(output);
