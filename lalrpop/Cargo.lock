@@ -21,6 +21,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "assembly_parser"
+version = "0.1.0"
+dependencies = [
+ "lalrpop",
+ "lalrpop-util",
+ "regex",
+]
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -170,15 +179,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a9a9d19fa1e79b6215ff29b9d6880b706147f16e9b1dbb1e4e5947b5b02bc5e3"
 dependencies = [
  "either",
-]
-
-[[package]]
-name = "lalrpop"
-version = "0.1.0"
-dependencies = [
- "lalrpop 0.19.7",
- "lalrpop-util",
- "regex",
 ]
 
 [[package]]
