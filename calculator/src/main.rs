@@ -20,6 +20,7 @@ fn calculator2() {
 }
 
 lalrpop_mod!(pub calculator4);
+
 pub mod ast;
 
 #[test]
@@ -28,6 +29,18 @@ fn calculator4() {
     println!("{:?}",expr);
 }
 
+
+lalrpop_mod!(pub assembly);
+pub mod assembly_ast;
+#[test]
+fn check_assembly() {
+    let expr = assembly::ExpressionParser::new().parse("hello: MOV a, b");
+    println!("{:?}", expr);
+}
+
 fn main() {
     println!("test");
 }
+
+//label: opcode ;comment
+//:b1

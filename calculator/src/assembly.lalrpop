@@ -1,0 +1,9 @@
+use std::str::FromStr;
+use crate::assembly_ast::{Statement};
+
+grammar;
+
+pub Expression: Statement<'input> = {
+	<a:"[a-zA-Z]+"> ":" <b:"[a-zA-Z0-9]+"> => Statement::Opcode(Some(a), b, None),
+	".+" => Statement::Opcode(None, <>, None)
+};

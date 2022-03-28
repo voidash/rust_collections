@@ -1,0 +1,5 @@
+print 12 + 832
+asdf = 12 + 12
+print asdf
+cedf =       asdf * 2
+print cedf 
