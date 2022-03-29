@@ -5,6 +5,35 @@ pub fn assemble(parsed_line: Opcode) {
     let mut assembled_vec:Vec<u8> = Vec::new(); 
 
     match(parsed_line.Op) {
+        Op::Op(instruction) => {
+            let ins = &instruction[..];
+            match ins {
+                "nop" => {assembled_vec.push(0x00);},
+                "rlc" => {assembled_vec.push(0x07);},
+                "rrc" => {assembled_vec.push(0x0f);},
+                "ral" => {assembled_vec.push(0x17);},
+                "rar" => {assembled_vec.push(0x1f);},
+                "rim" => {assembled_vec.push(0x20);},
+                "daa" => {assembled_vec.push(0x27);},
+                "cma" => {assembled_vec.push(0x2f);},
+                "sim" => {assembled_vec.push(0x30);},
+                "stc" => {assembled_vec.push(0x37);},
+                "cmc" => {assembled_vec.push(0x3f);},
+                "rnz" => {assembled_vec.push(0xc0);},
+                "rz" => {assembled_vec.push(0xc8);},
+                "rnc" => {assembled_vec.push(0xd0);},
+                "rc" => {assembled_vec.push(0xd8);},
+                "rpo" => {assembled_vec.push(0xe0);},
+                "xthl" => {assembled_vec.push(0xe3);},
+                "xchg" => {assembled_vec.push(0xeb);},
+                "rp" => {assembled_vec.push(0xf0);},
+                "di" => {assembled_vec.push(0xf3);},
+                "rm" => {assembled_vec.push(0xf8);},
+                "sphl" => {assembled_vec.push(0xf9);},
+                "ei" => {assembled_vec.push(0xfb);},
+                _ => {}
+            }
+        },
         Op::OpR(instruction, register) => {
             let ins = &instruction[..];
             let reg = &register[..];
