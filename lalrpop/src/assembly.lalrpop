@@ -1,19 +1,21 @@
 use crate::utils;
+use crate::ast::{Op, Opcode};
 
 grammar;
 
-NonLabelledOpcode : String = {
-	<a:Instruction> <b: Register> "," <c: Register> => format!("Instrucion: {}  Register: {} Register: {} ", a, b, c),
-	<a:Instruction> <b: Register> "," <c: Literal> => format!("Instrucion: {}  Register: {} Literal: {}", a, b, c),
-	<a:Instruction> <b: Register> => format!("Instrucion: {}  Register: {}", a,b ),
-	<a:Instruction> <b: Literal> => format!("Instrucion: {}  Literal: {}", a,b ),
-	<a:Instruction> <b: Label> => format!("Instrucion: {}  label: {}", a,b ),
-	<a:Instruction> => format!("Instrucion: {}", a),
-};
+NonLabelledOpcode : Op = {
+	<a:Instruction> <b: Register> "," <c: Register> => Op::OpRR(String::from(a), String::from(b), String::from(c)) ,
+	<a:Instruction> <b: Register> "," <c: Literal> => Op::OpRA(String::from(a), String::from(b), c),
+	<a:Instruction> <b: Register> => Op::OpR(String::from(a), String::from(b)),
+	<a:Instruction> <b: Literal> =>Op::OpA(String::from(a), b), 
+	<a:Instruction> <b: Label> => Op::OpL(String::from(a), String::from(b)),
+	<a:Instruction> => Op::Op(String::from(a))
 
-pub Opcode: String = {
-	<a:Label> ":" <b:NonLabelledOpcode> => format!("Label {}, Opcode {}", a,b),
-	NonLabelledOpcode
+}
+
+pub Opcode: Opcode = {
+	<a:Label> ":" <b:NonLabelledOpcode> => Opcode{Label: Some(String::from(a)), Op: b},
+	<a:NonLabelledOpcode> => Opcode{Label: None,Op: a } 
 }
 
 
@@ -100,7 +102,13 @@ pub Instruction : &'input str = {
 	"rnz" => <>
 }
 
-pub Register: &'input str = r"[abcdehlmABCDEHLM]" => <>;
+register: &'input str = r"[abcdehlmABCDEHLM]" => <>;
+pub Register: &'input str = {
+	register,
+	"sp" => <>,
+	"SP" => <>
+}
+
 
 //pub Hex: i32 = r"[0-9A-Fa-f]{1,4}[hH]" => utils::convert_8085_hex_to_i32(<>);
 pub Oct: i32 = r"[0-7]+[qQ]" => utils::convert_8085_oct_to_i32(<>);
@@ -112,7 +120,3 @@ pub Literal: i32 = {
 }
 
 pub Label: &'input str = r"[a-zA-Z][a-zA-Z0-9]+" => <>;
-
-
-
-
