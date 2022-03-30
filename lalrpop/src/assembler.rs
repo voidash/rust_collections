@@ -1,7 +1,7 @@
 use crate::ast::{Opcode, Op};
 use std::collections::HashMap;
 
-pub fn assemble(parsed_line: Opcode, label_offset_map: HashMap<String,u32>) {
+pub fn assemble(parsed_line: Opcode, label_offset_map: &HashMap<String,u32>) -> Vec<u8> {
     let mut assembled_vec:Vec<u8> = Vec::new(); 
 
     match parsed_line.Op {
@@ -10,6 +10,7 @@ pub fn assemble(parsed_line: Opcode, label_offset_map: HashMap<String,u32>) {
             if let Some(offset) = label_offset_map.get(&label) {
                 match ins {
                     "jc" => {assembled_vec.push(0xda);},
+                    "jmp" => {assembled_vec.push(0xc3);},
                     "jnc" =>{assembled_vec.push(0xd2);},
                     "jz" => {assembled_vec.push(0xca);},
                     "jnz" => {assembled_vec.push(0xc2);},
@@ -158,8 +159,6 @@ pub fn assemble(parsed_line: Opcode, label_offset_map: HashMap<String,u32>) {
 
             //for 16 bit
             // TODO: if data is greater than 2^16 then show error 
-            let a_lsb = (address & 0x0f) as u8;
-            let a_msb = ((address & 0xf0) >> 8) as u8;
             match (ins, register) {
                 ("lxi", r) => {
                     match r {
@@ -169,8 +168,7 @@ pub fn assemble(parsed_line: Opcode, label_offset_map: HashMap<String,u32>) {
                         "sp" => { assembled_vec.push(0x31); },
                         _ => { }
                     }
-                    assembled_vec.push(a_lsb);
-                    assembled_vec.push(a_msb);
+                    assembled_vec.append(&mut (address as u16).to_le_bytes().to_vec());
                 },
                 ("mvi", r) => {
                     match r {
@@ -181,7 +179,7 @@ pub fn assemble(parsed_line: Opcode, label_offset_map: HashMap<String,u32>) {
                         "h" => { assembled_vec.push(0x26); },
                         "l" => { assembled_vec.push(0x2e); },
                         "m" => { assembled_vec.push(0x36); },
-                        "a" => { assembled_vec.push(0x3a); },
+                        "a" => { assembled_vec.push(0x3e); },
                         _ => { }
                     }
                     assembled_vec.push(a_u8);
@@ -234,31 +232,25 @@ pub fn assemble(parsed_line: Opcode, label_offset_map: HashMap<String,u32>) {
                 },
                 "lda" => {
                     assembled_vec.push(0x3a);
-                    let add_lsb = (address & 0x0f) as u8;
-                    let add_msb = ((address & 0xf0) >> 8) as u8;
-                    assembled_vec.push(add_lsb);
-                    assembled_vec.push(add_msb);
+                    assembled_vec.append(&mut (address as u16).to_le_bytes().to_vec());
                 },
                 "sta" => {
                     assembled_vec.push(0x32);
-                    let add_lsb = (address & 0x0f) as u8;
-                    let add_msb = ((address & 0xf0) >> 8) as u8;
-                    assembled_vec.push(add_lsb);
-                    assembled_vec.push(add_msb);
+                    assembled_vec.append(&mut (address as u16).to_le_bytes().to_vec());
                 },
                 "jpo" => {
                     assembled_vec.push(0xe2);
-                    let add_lsb = (address & 0x0f) as u8;
-                    let add_msb = ((address & 0xf0) >> 8) as u8;
-                    assembled_vec.push(add_lsb);
-                    assembled_vec.push(add_msb);
+                    assembled_vec.append(&mut (address as u16).to_le_bytes().to_vec());
+
                 },
                 "cpo" => {
                     assembled_vec.push(0xe4);
-                    let add_lsb = (address & 0x0f) as u8;
-                    let add_msb = ((address & 0xf0) >> 8) as u8;
-                    assembled_vec.push(add_lsb);
-                    assembled_vec.push(add_msb);
+                    assembled_vec.append(&mut (address as u16).to_le_bytes().to_vec());
+
+                },
+                "jmp" => {
+                    assembled_vec.push(0xc3);
+                    assembled_vec.append(&mut (address as u16).to_le_bytes().to_vec());
                 },
                 _ => {} }
         },
@@ -448,6 +440,6 @@ pub fn assemble(parsed_line: Opcode, label_offset_map: HashMap<String,u32>) {
                 (_,_) => {}
             }
         }
-        _ => {}
     }
+    assembled_vec
 }
